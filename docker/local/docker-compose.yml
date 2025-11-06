@@ -1,0 +1,23 @@
+services:
+  auth-front:
+    build:
+      context: ${CONTEXT_DIR}
+      dockerfile: ./docker/local/Dockerfile
+    container_name: local-auth-front
+    ports:
+      - "${AUTH_FE_PORT}:3000"
+    env_file:
+      - .env.local
+    volumes:
+      - ${CONTEXT_DIR}:/usr/src/app
+      - /usr/src/app/node_modules
+    command: npm run dev
+    depends_on:
+      - mysql_auth
+      - redis
+    networks:
+      - partner-network
+
+networks:
+  partner-network:
+    name: partner-network
