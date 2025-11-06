@@ -1,13 +1,12 @@
-import { cn } from "@/lib/utils"
-import { Button } from "@/components/ui/button"
+import { cn } from "@/lib/utils";
+import { Button } from "@/components/ui/button";
 import {
   Field,
   FieldDescription,
   FieldGroup,
   FieldLabel,
-  FieldSeparator,
-} from "@/components/ui/field"
-import { Input } from "@/components/ui/input"
+} from "@/components/ui/field";
+import { Input } from "@/components/ui/input";
 
 export function LoginForm({
   className,
@@ -41,13 +40,13 @@ export function LoginForm({
         <Field>
           <Button type="submit">Login</Button>
         </Field>
-          <FieldDescription className="text-center">
-            Don&apos;t have an account?{" "}
-            <a href="#" className="underline underline-offset-4">
-              Sign up
-            </a>
-          </FieldDescription>
+        <FieldDescription className="text-center">
+          Don&apos;t have an account?{" "}
+          <a href="#" className="underline underline-offset-4">
+            Sign up
+          </a>
+        </FieldDescription>
       </FieldGroup>
     </form>
-  )
+  );
 }

@@ -1,0 +1,9 @@
+{
+  // ESLint와 Prettier 확장을 활성화
+  "editor.formatOnSave": true,
+  "editor.codeActionsOnSave": {
+    "source.fixAll.eslint": "explicit"
+  },
+  // Prettier를 기본 포맷터로 설정
+  "editor.defaultFormatter": "esbenp.prettier-vscode"
+}

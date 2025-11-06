@@ -1,5 +1,5 @@
-import { LoginForm } from "@/components/login-form"
-import { GalleryVerticalEnd } from "lucide-react"
+import { LoginForm } from "@/components/login-form";
+import { GalleryVerticalEnd } from "lucide-react";
 
 export default function LoginPage() {
   return (
@@ -20,8 +20,8 @@ export default function LoginPage() {
         </div>
       </div>
       <div className="bg-muted relative hidden lg:block">
-            {/* 요청과 받은 결과 출력 */}
+        {/* 요청과 받은 결과 출력 */}
       </div>
     </div>
-  )
+  );
 }
