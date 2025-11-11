@@ -15,6 +15,7 @@ import { useStartOAuth } from "@/hooks/useStartOAuth"; // ✅ 커스텀 훅 연�
 // 입력 검증 S
 import z from "zod";
 import { useAuthStore } from "@/stores/useAuthStore";
+import { useSearchParams } from "next/navigation";
 export const LoginSchema = z.object({
   email: z
     .string()
@@ -26,12 +27,20 @@ export const LoginSchema = z.object({
 // 입력 검증 E
 
 export function LoginForm() {
+  // oauth, oidc 용 파라미터
+  const searchParams = useSearchParams();
+  const authReqId = searchParams.get("auth_req_id"); // ✅ 여기서 URL 쿼리의 state 추출
+
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
   const addLog = useAuthStore((state) => state.addLog);
 
-  const { mutate: startOAuth, isPending } = useStartOAuth(email, password);
+  const { mutate: startOAuth, isPending } = useStartOAuth(
+    email,
+    password,
+    authReqId
+  );
 
   const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault(); // 기본 폼 액션 막기

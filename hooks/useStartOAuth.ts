@@ -4,11 +4,15 @@ import { useMutation } from "@tanstack/react-query";
 import { useAuthStore } from "@/stores/useAuthStore";
 import { verifyUserLogin } from "@/api/auth-api";
 
-export const useStartOAuth = (id: string, password: string) => {
+export const useStartOAuth = (
+  id: string,
+  password: string,
+  authReqId: string | null
+) => {
   const addLog = useAuthStore((state) => state.addLog);
 
   return useMutation({
-    mutationFn: () => verifyUserLogin(id, password),
+    mutationFn: () => verifyUserLogin(id, password, authReqId),
 
     onSuccess: (res: any) => {
       addLog({
@@ -20,7 +24,7 @@ export const useStartOAuth = (id: string, password: string) => {
       setTimeout(() => {
         addLog({
           status: "success",
-          data: "인증 서버로 이동",
+          data: "파트너 백앤드로 콜백",
           timestamp: new Date().toISOString(),
         });
       }, 1400);
@@ -31,9 +35,14 @@ export const useStartOAuth = (id: string, password: string) => {
         setTimeout(() => {
           addLog({
             status: "success",
-            data: "인증 서버로 authorize로 보내기",
+            data: `파트너 백앤드 콜백 : ${res.data.authorizeUrl}`,
             timestamp: new Date().toISOString(),
           });
+        }, 1400);
+
+        // ✅ 0.7초 후에 이동 (로그 확인 가능)
+        setTimeout(() => {
+          window.location.href = res.data.authorizeUrl;
         }, 2800);
       }
     },

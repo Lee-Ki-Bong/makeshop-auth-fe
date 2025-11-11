@@ -9,9 +9,13 @@ const authApi = axios.create({
 /**
  * 인증 서버 내부 로그인 요청 (/internal/verify-user)
  */
-export const verifyUserLogin = async (email: string, password: string) => {
+export const verifyUserLogin = async (
+  email: string,
+  password: string,
+  authReqId: string | null
+) => {
   return authApi
-    .post("/internal/verify-user", { email, password })
+    .post("/internal/verify-user", { email, password, authReqId })
     .then((res) => res.data)
     .catch((err) => {
       throw err;

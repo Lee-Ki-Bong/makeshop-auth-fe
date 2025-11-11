@@ -1,7 +1,8 @@
 # --------------------------------------------------
 # 🐳 Next.js Local Development Image
 # --------------------------------------------------
-FROM node:22-alpine
+# FROM node:22-alpine
+FROM node:20-bullseye
 
 # 작업 디렉토리
 WORKDIR /usr/src/app
