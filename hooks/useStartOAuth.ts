@@ -30,19 +30,19 @@ export const useStartOAuth = (
       }, 1400);
 
       // ✅ 로그인 성공하면 → 다시 authorize로 보내기
-      if (res?.data?.authorizeUrl) {
+      if (res?.data?.redirectUrl) {
         // ✅ 0.7초 후에 이동 (로그 확인 가능)
         setTimeout(() => {
           addLog({
             status: "success",
-            data: `파트너 백앤드 콜백 : ${res.data.authorizeUrl}`,
+            data: `파트너 백앤드 콜백 : ${res.data.redirectUrl}`,
             timestamp: new Date().toISOString(),
           });
         }, 1400);
 
         // ✅ 0.7초 후에 이동 (로그 확인 가능)
         setTimeout(() => {
-          window.location.href = res.data.authorizeUrl;
+          window.location.href = res.data.redirectUrl;
         }, 2800);
       }
     },
