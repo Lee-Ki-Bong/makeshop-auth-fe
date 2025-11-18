@@ -12,9 +12,6 @@ services:
       - ${CONTEXT_DIR}:/usr/src/app
       - /usr/src/app/node_modules
     command: npm run dev
-    depends_on:
-      - mysql_auth
-      - redis
     networks:
       - partner-network
 
