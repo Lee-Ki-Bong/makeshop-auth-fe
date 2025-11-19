@@ -9,7 +9,7 @@ WORKDIR /usr/src/app
 
 # 패키지 파일만 복사 후 의존성 설치 (캐싱 최적화)
 COPY package*.json ./
-RUN npm ci
+RUN npm install
 
 # 전체 소스 복사
 COPY . .
