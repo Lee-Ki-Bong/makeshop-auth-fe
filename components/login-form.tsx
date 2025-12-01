@@ -17,11 +17,7 @@ import z from "zod";
 import { useAuthStore } from "@/stores/useAuthStore";
 import { useSearchParams } from "next/navigation";
 export const LoginSchema = z.object({
-  email: z
-    .string()
-    .min(1, "이메일을 입력하세요")
-    .email("올바른 이메일 형식이 아닙니다"),
-
+  userId: z.string().min(1, "아이디를 입력하세요"),
   password: z.string().min(1, "비밀번호를 입력하세요"),
 });
 // 입력 검증 E
@@ -31,13 +27,13 @@ export function LoginForm() {
   const searchParams = useSearchParams();
   const authReqId = searchParams.get("auth_req_id"); // ✅ 여기서 URL 쿼리의 state 추출
 
-  const [email, setEmail] = useState("");
+  const [userId, setUserId] = useState("");
   const [password, setPassword] = useState("");
 
   const addLog = useAuthStore((state) => state.addLog);
 
   const { mutate: startOAuth, isPending } = useStartOAuth(
-    email,
+    userId,
     password,
     authReqId
   );
@@ -46,7 +42,7 @@ export function LoginForm() {
     e.preventDefault(); // 기본 폼 액션 막기
 
     // ✅ Zod 유효성 검사
-    const validationFields = LoginSchema.safeParse({ email, password });
+    const validationFields = LoginSchema.safeParse({ userId, password });
     if (!validationFields.success) {
       const errors = z.flattenError(validationFields.error).fieldErrors;
       addLog({
@@ -67,18 +63,18 @@ export function LoginForm() {
         <div className="flex flex-col items-center gap-1 text-center">
           <h1 className="text-2xl font-bold">Login to your account</h1>
           <p className="text-muted-foreground text-sm text-balance">
-            Enter your email below to login to your account
+            Enter your ID below to login to your account
           </p>
         </div>
 
         <Field>
-          <FieldLabel htmlFor="email">Email</FieldLabel>
+          <FieldLabel htmlFor="userId">User ID</FieldLabel>
           <Input
-            id="email"
-            type="email"
-            placeholder="m@example.com"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
+            id="userId"
+            type="text"
+            placeholder="아이디 입력"
+            value={userId}
+            onChange={(e) => setUserId(e.target.value)}
           />
         </Field>
 
