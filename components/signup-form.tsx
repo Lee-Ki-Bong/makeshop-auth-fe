@@ -164,7 +164,10 @@ export function SignUpForm() {
 
       <FieldDescription className="text-center text-sm">
         Already have an account?{" "}
-        <a href="/signin" className="underline underline-offset-4">
+        <a
+          href={`/signin${authReqId ? `?authReqId=${authReqId}` : ""}`}
+          className="underline underline-offset-4"
+        >
           Sign in
         </a>
       </FieldDescription>
