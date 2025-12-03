@@ -10,7 +10,7 @@ import {
 } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
 import { FormEvent, useState } from "react";
-import { useStartOAuth } from "@/hooks/useStartOAuth"; // ✅ 커스텀 훅 연결
+import { useSignIn } from "@/hooks/useSignIn"; // ✅ 커스텀 훅 연결
 
 // 입력 검증 S
 import z from "zod";
@@ -25,14 +25,14 @@ export const LoginSchema = z.object({
 export function LoginForm() {
   // oauth, oidc 용 파라미터
   const searchParams = useSearchParams();
-  const authReqId = searchParams.get("auth_req_id"); // ✅ 여기서 URL 쿼리의 state 추출
+  const authReqId = searchParams.get("authReqId"); // ✅ 여기서 URL 쿼리의 state 추출
 
   const [userId, setUserId] = useState("");
   const [password, setPassword] = useState("");
 
   const addLog = useAuthStore((state) => state.addLog);
 
-  const { mutate: startOAuth, isPending } = useStartOAuth(
+  const { mutate: startOAuth, isPending } = useSignIn(
     userId,
     password,
     authReqId

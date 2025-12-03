@@ -2,17 +2,28 @@
 
 import { useMutation } from "@tanstack/react-query";
 import { useAuthStore } from "@/stores/useAuthStore";
-import { verifyUserLogin } from "@/api/auth-api";
+import { signupUser } from "@/api/auth-api";
 
-export const useStartOAuth = (
-  id: string,
-  password: string,
-  authReqId: string | null
-) => {
+interface SignupFormValues {
+  loginUid: string;
+  password: string;
+  email: string;
+  name: string;
+  phone: string;
+  companyName?: string;
+  businessNumber?: string;
+}
+
+export const useSignUp = (authReqId: string | null) => {
   const addLog = useAuthStore((state) => state.addLog);
 
   return useMutation({
-    mutationFn: () => verifyUserLogin(id, password, authReqId),
+    mutationFn: (form: SignupFormValues) => {
+      return signupUser({
+        ...form,
+        authReqId,
+      });
+    },
 
     onSuccess: (res: any) => {
       addLog({
@@ -21,26 +32,16 @@ export const useStartOAuth = (
         timestamp: new Date().toISOString(),
       });
 
-      setTimeout(() => {
-        addLog({
-          status: "success",
-          data: "파트너 백앤드로 콜백",
-          timestamp: new Date().toISOString(),
-        });
-      }, 1400);
-
-      // ✅ 로그인 성공하면 → 다시 authorize로 보내기
+      // redirect URL 존재 시 → OAuth 계속 진행
       if (res?.data?.redirectUrl) {
-        // ✅ 0.7초 후에 이동 (로그 확인 가능)
         setTimeout(() => {
           addLog({
             status: "success",
-            data: `파트너 백앤드 콜백 : ${res.data.redirectUrl}`,
+            data: `OAuth Redirect: ${res.data.redirectUrl}`,
             timestamp: new Date().toISOString(),
           });
         }, 1400);
 
-        // ✅ 0.7초 후에 이동 (로그 확인 가능)
         setTimeout(() => {
           window.location.href = res.data.redirectUrl;
         }, 2800);
@@ -48,7 +49,7 @@ export const useStartOAuth = (
     },
 
     onError: (error: any) => {
-      const backendError = error?.response?.data || null; // ✅ 404 JSON도 포함됨
+      const backendError = error?.response?.data || null;
       const statusCode = error?.response?.status || "Unknown";
 
       addLog({

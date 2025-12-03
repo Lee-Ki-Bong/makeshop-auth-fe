@@ -21,3 +21,12 @@ export const verifyUserLogin = async (
       throw err;
     });
 };
+
+export const signupUser = async (data: any) => {
+  return authApi
+    .post(`/signup`, data)
+    .then((res) => res.data)
+    .catch((err) => {
+      throw err;
+    });
+};
