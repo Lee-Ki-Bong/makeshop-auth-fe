@@ -15,13 +15,7 @@ import {
 } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
 import { useSignUp } from "@/hooks/useSignUp";
-
-// import {
-//   Accordion,
-//   AccordionItem,
-//   AccordionTrigger,
-//   AccordionContent,
-// } from "@/components/ui/accordion";
+import { generateTestUser } from "@/lib/generateTestUser";
 
 // 유효성 검증 스키마
 const SignupSchema = z.object({
@@ -52,11 +46,10 @@ export function SignUpForm() {
   const { mutate: signup, isPending } = useSignUp(authReqId);
 
   const onChange = (key: keyof typeof form, value: string) =>
-    setForm({ ...form, [key]: value });
+    setForm((prev) => ({ ...prev, [key]: value }));
 
   const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-
     const result = SignupSchema.safeParse(form);
     if (!result.success) {
       const errors = z.flattenError(result.error).fieldErrors;
@@ -67,19 +60,26 @@ export function SignUpForm() {
       });
       return;
     }
-
     signup(form);
   };
 
   return (
     <form className={cn("flex flex-col gap-6")} onSubmit={handleSubmit}>
-      {/* 타이틀 */}
       <div className="flex flex-col gap-1 text-center">
         <h1 className="text-2xl font-bold">Create Account</h1>
         <p className="text-muted-foreground text-sm">
           Makeshop SSO 신규 계정 생성
         </p>
       </div>
+
+      <Button
+        type="button"
+        variant="secondary"
+        className="w-full"
+        onClick={() => setForm(generateTestUser())}
+      >
+        🧪 Fill Test User
+      </Button>
 
       <FieldGroup>
         <Field>

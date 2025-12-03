@@ -10,8 +10,6 @@ interface SignupFormValues {
   email: string;
   name: string;
   phone: string;
-  companyName?: string;
-  businessNumber?: string;
 }
 
 export const useSignUp = (authReqId: string | null) => {
