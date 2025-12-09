@@ -19,9 +19,9 @@ export const generateTestUser = () => {
   const domain = faker.helpers.arrayElement(domains);
 
   return {
-    loginUid,
-    password: "test1234!",
-    email: `${emailLocal}@${domain}`,
+    loginUid: `${loginUid}_faker`,
+    password: `${loginUid}_faker`,
+    email: `${emailLocal}_faker@${domain}`,
     name,
     phone: `010${faker.string.numeric(4)}${faker.string.numeric(4)}`,
   };
