@@ -1,7 +1,7 @@
 import axios from "axios";
 
 const authApi = axios.create({
-  baseURL: "http://localhost:3001", // ✅ 인증 백엔드
+  baseURL: "http://localhost:3002/api", // ✅ 인증 백엔드
   headers: { "Content-Type": "application/json" },
   withCredentials: true, // ✅ 세션/쿠키 저장 필수
 });
