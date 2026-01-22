@@ -1,7 +1,7 @@
 import axios from "axios";
 
 const authApi = axios.create({
-  baseURL: "http://localhost:3002/api", // ✅ 인증 백엔드
+  baseURL: "http://localhost:4210/api", // ✅ 인증 백엔드
   headers: { "Content-Type": "application/json" },
   withCredentials: true, // ✅ 세션/쿠키 저장 필수
 });
@@ -13,7 +13,7 @@ export const verifyUserLogin = async (
   loginUid: string,
   password: string,
   clientId: string | null,
-  state: string | null
+  state: string | null,
 ) => {
   return authApi
     .post("/internal/verify-user", { loginUid, password, clientId, state })
