@@ -31,7 +31,8 @@ const SignupSchema = z.object({
 
 export function SignUpForm() {
   const searchParams = useSearchParams();
-  const authReqId = searchParams.get("authReqId"); // OAuth 흐름 유지!
+  const clientId = searchParams.get("client_id");
+  const state = searchParams.get("state");
 
   const addLog = useAuthStore((s) => s.addLog);
 
@@ -43,23 +44,23 @@ export function SignUpForm() {
     phone: "",
   });
 
-  const { mutate: signup, isPending } = useSignUp(authReqId);
+  const { mutate: signup, isPending } = useSignUp(clientId, state);
 
   const onChange = (key: keyof typeof form, value: string) =>
     setForm((prev) => ({ ...prev, [key]: value }));
 
   const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    const result = SignupSchema.safeParse(form);
-    if (!result.success) {
-      const errors = z.flattenError(result.error).fieldErrors;
-      addLog({
-        status: "error",
-        error: errors,
-        timestamp: new Date().toISOString(),
-      });
-      return;
-    }
+    // const result = SignupSchema.safeParse(form);
+    // if (!result.success) {
+    //   const errors = z.flattenError(result.error).fieldErrors;
+    //   addLog({
+    //     status: "error",
+    //     error: errors,
+    //     timestamp: new Date().toISOString(),
+    //   });
+    //   return;
+    // }
     signup(form);
   };
 
@@ -165,7 +166,9 @@ export function SignUpForm() {
       <FieldDescription className="text-center text-sm">
         Already have an account?{" "}
         <a
-          href={`/signin${authReqId ? `?authReqId=${authReqId}` : ""}`}
+          href={`/signin${
+            clientId && state ? `?client_id=${clientId}&state=${state}` : ""
+          }`}
           className="underline underline-offset-4"
         >
           Sign in

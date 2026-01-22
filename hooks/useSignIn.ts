@@ -4,15 +4,24 @@ import { useMutation } from "@tanstack/react-query";
 import { useAuthStore } from "@/stores/useAuthStore";
 import { verifyUserLogin } from "@/api/auth-api";
 
-export const useSignIn = (
-  id: string,
-  password: string,
-  authReqId: string | null
-) => {
+type SignInPayload = {
+  id: string;
+  password: string;
+  clientId: string | null;
+  state: string | null;
+};
+
+export const useSignIn = () => {
   const addLog = useAuthStore((state) => state.addLog);
 
   return useMutation({
-    mutationFn: () => verifyUserLogin(id, password, authReqId),
+    mutationFn: (payload: SignInPayload) =>
+      verifyUserLogin(
+        payload.id,
+        payload.password,
+        payload.clientId,
+        payload.state
+      ),
 
     onSuccess: (res: any) => {
       addLog({
@@ -21,41 +30,33 @@ export const useSignIn = (
         timestamp: new Date().toISOString(),
       });
 
-      setTimeout(() => {
-        addLog({
-          status: "success",
-          data: "파트너 백앤드로 콜백",
-          timestamp: new Date().toISOString(),
-        });
-      }, 1400);
-
-      // ✅ 로그인 성공하면 → 다시 authorize로 보내기
-      if (res?.data?.redirectUrl) {
-        // ✅ 0.7초 후에 이동 (로그 확인 가능)
+      if (res?.data?.redirectUri) {
         setTimeout(() => {
-          addLog({
-            status: "success",
-            data: `파트너 백앤드 콜백 : ${res.data.redirectUrl}`,
-            timestamp: new Date().toISOString(),
-          });
-        }, 1400);
-
-        // ✅ 0.7초 후에 이동 (로그 확인 가능)
-        setTimeout(() => {
-          window.location.href = res.data.redirectUrl;
+          window.location.href = res.data.redirectUri;
         }, 2800);
       }
     },
 
     onError: (error: any) => {
-      const backendError = error?.response?.data || null; // ✅ 404 JSON도 포함됨
-      const statusCode = error?.response?.status || "Unknown";
-
+      const backendError = error?.response?.data || null;
+      const errorCode = backendError?.code || "Unknown";
       addLog({
         status: "error",
-        error: backendError || { message: error.message, statusCode },
+        error: error?.response?.data ?? error.message,
         timestamp: new Date().toISOString(),
       });
+
+      if (errorCode === "AUTHORIZE_CONTEXT_EXPIRED") {
+        addLog({
+          status: "error",
+          error: "요청 시간이 초과되었습니다. 잠시 후 다시 시도해주세요.",
+          timestamp: new Date().toISOString(),
+        });
+
+        setTimeout(() => {
+          window.location.href = backendError.data.redirectUri;
+        }, 2800);
+      }
     },
   });
 };

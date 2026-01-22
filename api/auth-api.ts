@@ -12,10 +12,11 @@ const authApi = axios.create({
 export const verifyUserLogin = async (
   loginUid: string,
   password: string,
-  authReqId: string | null
+  clientId: string | null,
+  state: string | null
 ) => {
   return authApi
-    .post("/internal/verify-user", { loginUid, password, authReqId })
+    .post("/internal/verify-user", { loginUid, password, clientId, state })
     .then((res) => res.data)
     .catch((err) => {
       throw err;

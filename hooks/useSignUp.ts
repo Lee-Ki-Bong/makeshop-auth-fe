@@ -12,14 +12,15 @@ interface SignupFormValues {
   phone: string;
 }
 
-export const useSignUp = (authReqId: string | null) => {
+export const useSignUp = (clientId: string | null, state: string | null) => {
   const addLog = useAuthStore((state) => state.addLog);
 
   return useMutation({
     mutationFn: (form: SignupFormValues) => {
       return signupUser({
         ...form,
-        authReqId,
+        clientId,
+        state,
       });
     },
 
@@ -31,17 +32,17 @@ export const useSignUp = (authReqId: string | null) => {
       });
 
       // redirect URL 존재 시 → OAuth 계속 진행
-      if (res?.data?.redirectUrl) {
+      if (res?.data?.redirectUri) {
         setTimeout(() => {
           addLog({
             status: "success",
-            data: `OAuth Redirect: ${res.data.redirectUrl}`,
+            data: `OAuth Redirect: ${res.data.redirectUri}`,
             timestamp: new Date().toISOString(),
           });
         }, 1400);
 
         setTimeout(() => {
-          window.location.href = res.data.redirectUrl;
+          window.location.href = res.data.redirectUri;
         }, 2800);
       }
     },
@@ -50,11 +51,27 @@ export const useSignUp = (authReqId: string | null) => {
       const backendError = error?.response?.data || null;
       const statusCode = error?.response?.status || "Unknown";
 
+      const errorCode = error?.response?.data?.code || "Unknown";
+
+      console.error("SignUp Error:", error);
+
       addLog({
         status: "error",
         error: backendError || { message: error.message, statusCode },
         timestamp: new Date().toISOString(),
       });
+
+      if (errorCode === "AUTHORIZE_CONTEXT_EXPIRED") {
+        addLog({
+          status: "error",
+          error: "요청 시간이 초과되었습니다. 잠시 후 다시 시도해주세요.",
+          timestamp: new Date().toISOString(),
+        });
+
+        setTimeout(() => {
+          window.location.href = backendError.data.redirectUri;
+        }, 2800);
+      }
     },
   });
 };

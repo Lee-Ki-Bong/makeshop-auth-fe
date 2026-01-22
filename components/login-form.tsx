@@ -9,7 +9,7 @@ import {
   FieldLabel,
 } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
-import { FormEvent, useState } from "react";
+import { FormEvent, useRef, useState } from "react";
 import { useSignIn } from "@/hooks/useSignIn"; // ✅ 커스텀 훅 연결
 
 // 입력 검증 S
@@ -25,26 +25,29 @@ export const LoginSchema = z.object({
 export function LoginForm() {
   // oauth, oidc 용 파라미터
   const searchParams = useSearchParams();
-  const authReqId = searchParams.get("authReqId"); // ✅ 여기서 URL 쿼리의 state 추출
+  const clientId = searchParams.get("client_id");
+  const state = searchParams.get("state");
+
+  // const submittingRef = useRef(false);
 
   const [userId, setUserId] = useState("");
   const [password, setPassword] = useState("");
 
-  const addLog = useAuthStore((state) => state.addLog);
+  const addLog = useAuthStore((userState) => userState.addLog);
 
-  const { mutate: startOAuth, isPending } = useSignIn(
-    userId,
-    password,
-    authReqId
-  );
+  const { mutate: startOAuth, isPending } = useSignIn();
 
   const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault(); // 기본 폼 액션 막기
+
+    // if (submittingRef.current) return; // ✅ 두 번째 호출 차단
+    // submittingRef.current = true;
 
     // ✅ Zod 유효성 검사
     const validationFields = LoginSchema.safeParse({ userId, password });
     if (!validationFields.success) {
       const errors = z.flattenError(validationFields.error).fieldErrors;
+      // submittingRef.current = false; // ❗ 실패 시 다시 열어줌
       addLog({
         status: "error",
         error: errors,
@@ -54,7 +57,12 @@ export function LoginForm() {
     }
 
     // ✅ 커스텀 훅 실행 → 인증 백엔드(/internal/verify-user) 호출
-    startOAuth();
+    startOAuth({
+      id: userId,
+      password,
+      clientId,
+      state,
+    });
   };
 
   return (
@@ -104,8 +112,11 @@ export function LoginForm() {
 
         <FieldDescription className="text-center">
           Don&apos;t have an account?{" "}
+          {/** 회원가입이였다가, 갑자기 로그인 요청으로 바뀌는게 정당한건가? */}
           <a
-            href={`/signup${authReqId ? `?authReqId=${authReqId}` : ""}`}
+            href={`/signup${
+              clientId && state ? `?client_id=${clientId}&state=${state}` : ""
+            }`}
             className="underline underline-offset-4"
           >
             Sign up
